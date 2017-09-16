@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mWelcomeMessage;
+    private TextView mWelcomeMessageTextView;
     private Button mInterviewButton;
 
     @Override
@@ -18,10 +18,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // comment commit
-        mWelcomeMessage = (TextView) findViewById(R.id.tv_welcome_message);
+        mWelcomeMessageTextView = (TextView) findViewById(R.id.tv_welcome_message);
         mInterviewButton = (Button) findViewById(R.id.btn_start_interview);
 
-        mWelcomeMessage.setText(R.string.welcome_message);
+        mWelcomeMessageTextView.setText(R.string.welcome_message);
     }
 
     public void onInterviewButtonClick(View view) {

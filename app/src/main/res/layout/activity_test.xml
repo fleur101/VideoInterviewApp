@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mirka.app.naimi.TestActivity">
+    tools:context="com.mirka.app.naimi.TestActivity"
+    android:orientation="vertical"
+    android:weightSum="10">
+
+        <fragment
+            android:name="com.mirka.app.naimi.fragments.CameraFragment"
+            android:id="@+id/fragment_camera"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7">
+        </fragment>
+    
+        <fragment
+            android:name="com.mirka.app.naimi.fragments.QuestionFragment"
+            android:id="@+id/fragment_question"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3">
+        </fragment>
+
+
 
 </LinearLayout>

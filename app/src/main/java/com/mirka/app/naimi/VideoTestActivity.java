@@ -36,10 +36,14 @@ public class VideoTestActivity extends AppCompatActivity {
             Toast.makeText(this, "Camera exists! =)" + frontCameraId, Toast.LENGTH_SHORT).show();
 
             mCamera = getCameraInstance(frontCameraId);
-            // Create our Preview view and set it as the content of our activity.
-            mPreview = new CameraPreview(this, mCamera);
-            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-            preview.addView(mPreview);
+            if (mCamera == null) {
+                Toast.makeText(this, "Oh, shit!!! Camera is null, fuck", Toast.LENGTH_SHORT).show();
+            } else {
+                // Create our Preview view and set it as the content of our activity.
+                mPreview = new CameraPreview(this, mCamera);
+                FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+                preview.addView(mPreview);
+            }
         } else {
             Toast.makeText(this, "No front camera, sorry=(", Toast.LENGTH_SHORT).show();
         }

@@ -7,22 +7,18 @@
     android:orientation="vertical"
     android:weightSum="10">
 
-        <fragment
-            android:name="com.mirka.app.naimi.fragments.CameraFragment"
-            android:id="@+id/fragment_camera"
+        <FrameLayout
+            android:id="@+id/frame_camera"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="7">
-        </fragment>
+        </FrameLayout>
     
-        <fragment
-            android:name="com.mirka.app.naimi.fragments.QuestionFragment"
-            android:id="@+id/fragment_question"
+        <FrameLayout
+            android:id="@+id/frame_question"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3">
-        </fragment>
-
-
+        </FrameLayout>
 
 </LinearLayout>

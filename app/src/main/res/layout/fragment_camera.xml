@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     tools:context="com.mirka.app.naimi.fragments.CameraFragment"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     >
 
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="500dp"
       >
     </FrameLayout>
     <TextView

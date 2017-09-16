@@ -73,7 +73,7 @@ public class CameraFragment extends Fragment {
         mStopRecordingButton = (Button)view.findViewById(R.id.btn_camera_fragment);
         launchCameraPreview();
         parentActivity = ((TestActivity)getActivity());
-        timer = new CountDownTimer(3000, 1000) {
+        timer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 mTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
@@ -96,7 +96,7 @@ public class CameraFragment extends Fragment {
                         //parentActivity.startQuestion();
                     }
                 }.start();
-                //parentActivity.startQuestion();
+//                startQuestion();
             }
         }.start();
 
@@ -140,10 +140,11 @@ public class CameraFragment extends Fragment {
     }
 
 
+
     @Override
     public void onPause() {
         super.onPause();
-        mPreview.getHolder().removeCallback(mPreview);
+        // mPreview.getHolder().removeCallback(mPreview);
         releaseMediaRecorder();       // if you are using MediaRecorder, release it first
         releaseCamera();              // release the camera immediately on pause event
     }
@@ -151,8 +152,8 @@ public class CameraFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //mButton.setEnabled(false);
-        parentActivity.ensurePermission();
+        // mButton.setEnabled(false);
+        // parentActivity.ensurePermission();
     }
 
 
@@ -230,12 +231,12 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    /** Create a file Uri for saving an image or video */
+    // Create a file Uri for saving an image or video
     private static Uri getOutputMediaFileUri(String videoname){
         return Uri.fromFile(getOutputMediaFile(videoname));
     }
 
-    /** Create a File for saving an image or video */
+    // Create a File for saving an image or video
     private static File getOutputMediaFile(String videoname){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
@@ -259,10 +260,6 @@ public class CameraFragment extends Fragment {
                 "VID_" + videoname + ".mp4");
         return mediaFile;
     }
-
-
-
-
 
 
 

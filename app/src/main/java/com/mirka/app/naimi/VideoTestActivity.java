@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 public class VideoTestActivity extends AppCompatActivity {
@@ -24,11 +25,23 @@ public class VideoTestActivity extends AppCompatActivity {
 
         mVideoView = (VideoView) findViewById(R.id.vv_show_video);
 
+        int frontCameraId;
+
+        if (checkCameraHardware(this) && (frontCameraId = getFrontCameraId(this)) != -1){
+
+            Toast.makeText(this, "Camera exists! =)" + frontCameraId, Toast.LENGTH_SHORT).show();
+
+
+
+        } else {
+            Toast.makeText(this, "No front camera, sorry=(", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)){
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             // this device has a camera
             return true;
         } else {
@@ -39,15 +52,16 @@ public class VideoTestActivity extends AppCompatActivity {
 
     /** Check if this device has a camera */
     private int getFrontCameraId(Context context) {
-        int i;
-        for (i=0; i< Camera.getNumberOfCameras(); i++) {
+        int cameraID = -1;
+        for (int i=0; i< Camera.getNumberOfCameras(); i++) {
             Camera.CameraInfo newInfo = new Camera.CameraInfo();
             Camera.getCameraInfo(i, newInfo);
             if (newInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                cameraID = i;
                 break;
             }
         }
-        return i;
+        return cameraID;
     }
 
     public void dispatchTakeVideoEvent(View view) {

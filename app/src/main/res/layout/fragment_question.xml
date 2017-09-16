@@ -1,17 +1,38 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.mirka.app.naimi.fragments.QuestionFragment">
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
 
-    <ScrollView
+    <TextView
+        android:id="@+id/tv_timer_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-        <TextView
-            android:id="@+id/tv_question_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        tools:text="0"
+        />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tv_question_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        tools:text="Question 1"
+        />
+    <Button
+        android:id="@+id/btn_question_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:textSize="20sp"
+        android:text="Skip"/>
+
+</LinearLayout>
+

@@ -5,20 +5,15 @@
     android:layout_height="match_parent"
     tools:context="com.mirka.app.naimi.TestActivity"
     android:orientation="vertical"
-    android:weightSum="10">
+    >
 
         <FrameLayout
-            android:id="@+id/frame_camera"
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="7">
+            android:layout_height="match_parent"
+            >
         </FrameLayout>
     
-        <FrameLayout
-            android:id="@+id/frame_question"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3">
-        </FrameLayout>
+
 
 </LinearLayout>

@@ -2,13 +2,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mirka.app.naimi.fragments.CameraFragment">
+    tools:context="com.mirka.app.naimi.fragments.CameraFragment"
+    android:orientation="vertical"
+    android:gravity="center"
+    >
 
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp"
+      >
     </FrameLayout>
+    <TextView
+        android:id="@+id/tv_camera_timer_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        tools:text="Question 1"
+        />
+    <Button
+        android:id="@+id/btn_camera_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:textSize="20sp"
+        android:text="Finish recording"/>
 
     <!-- TODO: add a button(?) -->
 

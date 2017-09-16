@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Naimi</string>
+    <string name="welcome_message">Welcome to Naimi.kz sobesedovanie. This is Gaukhar, Miras, and Alisher. We are actually awesome and are the best yoooooooooo</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

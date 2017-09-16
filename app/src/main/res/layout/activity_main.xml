@@ -5,11 +5,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
     tools:context="com.mirka.app.naimi.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_welcome_message"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:gravity="center_horizontal"
+        tools:text="Welcome" />
+    
+    <Button
+        android:id="@+id/btn_start_interview"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:padding="5dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Go to interview"
+        android:onClick="onInterviewButtonClick" />
 
 </LinearLayout>

@@ -23,6 +23,7 @@ public class CameraFragment extends Fragment {
     private Camera mCamera;
     private CameraPreview mPreview;
 
+    private int frontCameraId;
     public CameraFragment() {
         // Required empty public constructor
     }
@@ -40,9 +41,8 @@ public class CameraFragment extends Fragment {
 
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 
-        if (checkCameraHardware(getContext())) {
-            mCamera = getCameraInstance();
-
+        if (checkCameraHardware(getContext())  && (frontCameraId = getFrontCameraId(getContext())) != -1) {
+            mCamera = getCameraInstance(getContext(), frontCameraId);
             mPreview = new CameraPreview(getContext(), mCamera);
             preview.addView(mPreview);
         } else {
@@ -61,13 +61,28 @@ public class CameraFragment extends Fragment {
         }
     }
 
+    /** Check if this device has a camera */
+    private int getFrontCameraId(Context context) {
+        int cameraID = -1;
+        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
+            Camera.CameraInfo newInfo = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, newInfo);
+            if (newInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                cameraID = i;
+                break;
+            }
+        }
+        return cameraID;
+    }
+
     /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(){
+    public static Camera getCameraInstance(Context context, int id){
         Camera c = null;
         Log.e(TAG, "getCameraInstance()");
         try {
             // we suppose it
-            c = Camera.open(); // attempt to get a Camera instance
+
+            c = Camera.open(id); // attempt to get a Camera instance
             Log.e(TAG, "getCameraInstance() try");
         } catch (Exception e){
             // Camera is not available (in use or does not exist)

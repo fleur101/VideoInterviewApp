@@ -1,6 +1,7 @@
 package com.mirka.app.naimi;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Video;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,15 +24,31 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.coremedia.iso.boxes.Container;
 import com.mirka.app.naimi.utils.CameraPreview;
 
+
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
 public class VideoTestActivity extends AppCompatActivity {
+
+    private String path = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES)+ File.separator +"MyCameraApp" + File.separator;
 
     static final int REQUEST_VIDEO_CAPTURE = 1;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
@@ -44,6 +62,7 @@ public class VideoTestActivity extends AppCompatActivity {
     private boolean isRecording = false;
     private Button mButton;
 
+    private int n = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +133,7 @@ public class VideoTestActivity extends AppCompatActivity {
         mButton.setEnabled(true);
     }
 
-    private boolean prepareVideoRecorder() {
+    private boolean prepareVideoRecorder(String filename) {
 
 
         mMediaRecorder = new MediaRecorder();
@@ -130,7 +149,8 @@ public class VideoTestActivity extends AppCompatActivity {
 
         mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
 
-        mMediaRecorder.setOutputFile(getOutputMediaFile().toString());
+
+        mMediaRecorder.setOutputFile(getOutputMediaFile(filename).toString());
         mMediaRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
         try {
             mMediaRecorder.prepare();
@@ -162,11 +182,15 @@ public class VideoTestActivity extends AppCompatActivity {
         }
     }
 
+
     public void buttonClickHandler(View view){
-        recordVideo();
+        recordVideo("filename"+n);
+        n++;
     }
 
-    private void recordVideo(){
+
+
+    private void recordVideo(String filename){
         if (isRecording) {
             // stop recording and release camera
             mMediaRecorder.stop();  // stop the recording
@@ -178,7 +202,7 @@ public class VideoTestActivity extends AppCompatActivity {
 
         } else {
             // initialize video camera
-            if (prepareVideoRecorder()) {
+            if (prepareVideoRecorder(filename)) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
                 // now you can start recording
                 mMediaRecorder.start();
@@ -194,12 +218,12 @@ public class VideoTestActivity extends AppCompatActivity {
     }
 
     /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(){
-        return Uri.fromFile(getOutputMediaFile());
+    private static Uri getOutputMediaFileUri(String filename){
+        return Uri.fromFile(getOutputMediaFile(filename));
     }
 
     /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(){
+    private static File getOutputMediaFile(String filename){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
@@ -220,7 +244,7 @@ public class VideoTestActivity extends AppCompatActivity {
         String timeStamp = new Date().toString();
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
+                    filename+ ".mp4");
         return mediaFile;
     }
 
@@ -277,4 +301,58 @@ public class VideoTestActivity extends AppCompatActivity {
             mVideoView.setVideoURI(videoUri);
         }
     }
+
+    public void concatenate(View view){
+        try {
+            appendVideo( new String[]{"filename0.mp4", "filename2.mp4"}  );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param
+     * @return 	return combine video path string
+     * */
+    public String appendVideo(String[] videos) throws IOException{
+        Log.v(TAG, "in appendVideo() videos length is " + videos.length);
+        Movie[] inMovies = new Movie[videos.length];
+        int index = 0;
+        for(String video: videos)
+        {
+            Log.i(TAG, "    in appendVideo one video path = " + video);
+            inMovies[index] = MovieCreator.build(path+video);
+            index++;
+        }
+        List<Track> videoTracks = new LinkedList<Track>();
+        List<Track> audioTracks = new LinkedList<Track>();
+        for (Movie m : inMovies) {
+            for (Track t : m.getTracks()) {
+                if (t.getHandler().equals("soun")) {
+                    audioTracks.add(t);
+                }
+                if (t.getHandler().equals("vide")) {
+                    videoTracks.add(t);
+                }
+            }
+        }
+
+        Movie result = new Movie();
+        Log.v(TAG, "audioTracks size = " + audioTracks.size()
+                + " videoTracks size = " + videoTracks.size());
+        if (audioTracks.size() > 0) {
+            result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+        }
+        if (videoTracks.size() > 0) {
+            result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+        }
+        String videoCombinePath = RecordUtil.createFinalPath(this);
+        Container out = new DefaultMp4Builder().build(result);
+        FileChannel fc = new RandomAccessFile(videoCombinePath, "rw").getChannel();
+        out.writeContainer(fc);
+        fc.close();
+        Log.v(TAG, "after combine videoCombinepath = " + videoCombinePath);
+        return videoCombinePath;
+    }
+
 }

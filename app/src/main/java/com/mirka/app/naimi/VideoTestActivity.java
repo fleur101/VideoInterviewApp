@@ -23,6 +23,7 @@ public class VideoTestActivity extends AppCompatActivity {
     static final int REQUEST_VIDEO_CAPTURE = 1;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
 
+    private int frontCameraId;
     private VideoView mVideoView;
     private Camera mCamera;
     private CameraPreview mPreview;
@@ -33,51 +34,59 @@ public class VideoTestActivity extends AppCompatActivity {
 
         mVideoView = (VideoView) findViewById(R.id.vv_show_video);
 
-        int frontCameraId;
 
         if (checkCameraHardware(this) && (frontCameraId = getFrontCameraId(this)) != -1){
 
             Toast.makeText(this, "Camera exists! =)" + frontCameraId, Toast.LENGTH_SHORT).show();
 
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
+            // CAMERA PERMISSION REQUEST
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_DENIED) {
 
-                // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.CAMERA)) {
-
-                    // Show an explanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-
                 } else {
-
-                    // No explanation needed, we can request the permission.
-
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.READ_CONTACTS},
                             MY_PERMISSIONS_REQUEST_CAMERA);
-
-                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                    // app-defined int constant. The callback method gets the
-                    // result of the request.
                 }
+
+            } else {
+                launchCameraPreview ();
             }
 
-            mCamera = getCameraInstance(this, frontCameraId);
-            if (mCamera == null) {
-                Toast.makeText(this, "Oh, shit!!! Camera is null, fuck", Toast.LENGTH_SHORT).show();
-            } else {
-                // Create our Preview view and set it as the content of our activity.
-                mPreview = new CameraPreview(this, mCamera);
-                FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-                preview.addView(mPreview);
-            }
+
         } else {
             Toast.makeText(this, "No front camera, sorry=(", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void launchCameraPreview(){
+        mCamera = getCameraInstance(this, frontCameraId);
+        if (mCamera == null) {
+            Toast.makeText(this, "Oh, shit!!! Camera is null, fuck", Toast.LENGTH_SHORT).show();
+        } else {
+            // Create our Preview view and set it as the content of our activity.
+            mPreview = new CameraPreview(this, mCamera);
+            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            preview.addView(mPreview);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+
+                launchCameraPreview ();
+
+            } else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /** A safe way to get an instance of the Camera object. */

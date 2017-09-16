@@ -47,10 +47,9 @@ public class VideoTestActivity extends AppCompatActivity {
                         Manifest.permission.CAMERA)) {
                 } else {
                     ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.READ_CONTACTS},
+                            new String[]{Manifest.permission.CAMERA},
                             MY_PERMISSIONS_REQUEST_CAMERA);
                 }
-
             } else {
                 launchCameraPreview ();
             }
@@ -76,7 +75,7 @@ public class VideoTestActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
@@ -85,6 +84,8 @@ public class VideoTestActivity extends AppCompatActivity {
 
             } else {
                 Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+
+                launchCameraPreview ();
             }
         }
     }

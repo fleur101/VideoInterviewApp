@@ -35,7 +35,7 @@ public class VideoTestActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Camera exists! =)" + frontCameraId, Toast.LENGTH_SHORT).show();
 
-            mCamera = getCameraInstance(frontCameraId);
+            mCamera = getCameraInstance(this, frontCameraId);
             if (mCamera == null) {
                 Toast.makeText(this, "Oh, shit!!! Camera is null, fuck", Toast.LENGTH_SHORT).show();
             } else {
@@ -51,12 +51,13 @@ public class VideoTestActivity extends AppCompatActivity {
     }
 
     /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(int id){
+    public static Camera getCameraInstance(Context context, int id){
         Camera c = null;
         try {
             c = Camera.open(id); // attempt to get a Camera instance
         }
         catch (Exception e){
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             // Camera is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable

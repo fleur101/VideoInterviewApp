@@ -9,15 +9,19 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.mirka.app.naimi.utils.CameraPreview;
 
 public class VideoTestActivity extends AppCompatActivity {
 
     static final int REQUEST_VIDEO_CAPTURE = 1;
 
     private VideoView mVideoView;
-
+    private Camera mCamera;
+    private CameraPreview mPreview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,12 +35,27 @@ public class VideoTestActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Camera exists! =)" + frontCameraId, Toast.LENGTH_SHORT).show();
 
-
-
+            mCamera = getCameraInstance(frontCameraId);
+            // Create our Preview view and set it as the content of our activity.
+            mPreview = new CameraPreview(this, mCamera);
+            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            preview.addView(mPreview);
         } else {
             Toast.makeText(this, "No front camera, sorry=(", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    /** A safe way to get an instance of the Camera object. */
+    public static Camera getCameraInstance(int id){
+        Camera c = null;
+        try {
+            c = Camera.open(id); // attempt to get a Camera instance
+        }
+        catch (Exception e){
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
     }
 
     /** Check if this device has a camera */

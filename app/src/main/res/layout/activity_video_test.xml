@@ -6,7 +6,14 @@
     android:layout_height="match_parent"
     tools:context="com.mirka.app.naimi.VideoTestActivity">
 
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        />
+
     <VideoView
+        android:visibility="gone"
         android:id="@+id/vv_show_video"
         android:layout_width="0dp"
         android:layout_height="400dp"

@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mirka.app.naimi.R;
@@ -23,7 +25,9 @@ public class QuestionFragment extends Fragment {
 
     public static final String TAG = "QUESTION_FRAGMENT_TAG";
     private TextView mTimerTextView;
-
+    private TextView mFinishInterviewTextView;
+    private RelativeLayout mQuestionRelativeLayout;
+    public static final int QUESTION_TIME = 10 * 1000;
     TestActivity parentActivity;
     CountDownTimer timer;
 
@@ -42,36 +46,42 @@ public class QuestionFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_question, container, false);
         Log.e(TAG, "onCreateView: got into question fragment");
 
+        mQuestionRelativeLayout = (RelativeLayout) view.findViewById(R.id.rl_question);
+        mFinishInterviewTextView = (TextView) view.findViewById(R.id.tv_end_interview);
         TextView mQuestionTextView = (TextView) view.findViewById(R.id.tv_question_text);
         mTimerTextView = (TextView) view.findViewById(R.id.tv_timer_text);
         Button mSkipQuestionButton = (Button) view.findViewById(R.id.btn_question_fragment);
         parentActivity = ((TestActivity)getActivity());
-        timer = new CountDownTimer(5000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                mTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
-            }
+        if (TestActivity.getQuestionNum() == 5) {
+            mQuestionRelativeLayout.setVisibility(View.GONE);
+            mFinishInterviewTextView.setVisibility(View.VISIBLE);
+        } else {
+            mQuestionTextView.setText(TestActivity.mQuestionList.get(TestActivity.getQuestionNum()));
+            TestActivity.increaseQuestionNum();
+            timer = new CountDownTimer(10000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    mTimerTextView.setText(String.valueOf(millisUntilFinished / 1000));
+                }
 
-            @Override
-            public void onFinish() {
-                timer.cancel();
-                //parentActivity.startVideo();
-                startVideo();
-            }
-        }.start();
+                @Override
+                public void onFinish() {
+                    timer.cancel();
+                    //parentActivity.startVideo();
+                    startVideo();
+                }
+            }.start();
 
-        mSkipQuestionButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                timer.cancel();
-               // ((TestActivity)getActivity()).startVideo();
-                startVideo();
-            }
-        });
-        mQuestionTextView.setText(TestActivity.mQuestionList.get(0));
+            mSkipQuestionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timer.cancel();
+                    // ((TestActivity)getActivity()).startVideo();
+                    startVideo();
+                }
+            });
 
+        }
         return view;
     }
     public void startVideo(){

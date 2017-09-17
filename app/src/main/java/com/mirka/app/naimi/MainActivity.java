@@ -20,8 +20,6 @@ public class MainActivity extends AppCompatActivity {
         // comment commit
         mWelcomeMessageTextView = (TextView) findViewById(R.id.tv_welcome_message);
         mInterviewButton = (Button) findViewById(R.id.btn_start_interview);
-
-        mWelcomeMessageTextView.setText(R.string.welcome_message);
     }
 
     public void onInterviewButtonClick(View view) {

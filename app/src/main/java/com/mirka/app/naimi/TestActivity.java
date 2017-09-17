@@ -30,6 +30,7 @@ public class TestActivity extends AppCompatActivity {
     private static final String TAG = "TEST_ACTIVITY_TAG";
     static final int REQUEST_VIDEO_CAPTURE = 1;
     private int frontCameraId;
+    public static int questionNum=0;
 
     public CameraFragment cameraFragment;
     public QuestionFragment questionFragment;
@@ -45,6 +46,14 @@ public class TestActivity extends AppCompatActivity {
 
         ensurePermission();
         fillQuestions();
+    }
+
+    public static void increaseQuestionNum(){
+        questionNum++;
+    }
+
+    public static int getQuestionNum(){
+        return questionNum;
     }
 
     /** Check if this device has a camera */
@@ -93,11 +102,14 @@ public class TestActivity extends AppCompatActivity {
     private void fillQuestions() {
         // filling questions list
         mQuestionList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) mQuestionList.add("Question number " + i);
+        mQuestionList.add("Расскажите вкратце о себе");
+        mQuestionList.add("Расскажите о своих профессиональных навыках");
+        mQuestionList.add("Каков ваш опыт работы в данной сфере?");
+        mQuestionList.add("Каковые ваши недостатки и достоинства?");
+        mQuestionList.add("Почему Вы выбрали эту площадку?");
     }
 
     public void launchFragment() {
-        Toast.makeText(this, "HEY THERE", Toast.LENGTH_LONG).show();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 //        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);

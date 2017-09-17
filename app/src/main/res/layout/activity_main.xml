@@ -13,16 +13,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        tools:text="Welcome" />
-    
+        android:text="@string/welcome_message"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:textSize="16sp"
+        android:layout_marginTop="20dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/success"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"
+        />
+
+
     <Button
         android:id="@+id/btn_start_interview"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:padding="15dp"
         android:layout_gravity="center_horizontal"
-        android:text="Go to interview"
+        android:text="@string/go_to_interview"
         android:onClick="onInterviewButtonClick" />
 
 </LinearLayout>

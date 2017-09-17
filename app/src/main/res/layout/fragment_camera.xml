@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,29 +6,51 @@
     android:orientation="vertical"
     android:gravity="center_horizontal"
     >
-
     <FrameLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-      >
-    </FrameLayout>
-    <TextView
-        android:id="@+id/tv_camera_timer_text"
+        android:id="@+id/fl_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        >
+
+        <FrameLayout
+            android:id="@+id/camera_preview"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+          >
+        </FrameLayout>
+        <TextView
+            android:id="@+id/tv_preview_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="50sp"
+            tools:text="1"
+            />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_record_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textSize="30sp"
-        tools:text="Question 1"
+        android:layout_below="@+id/fl_preview"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        tools:text="1"
         />
     <Button
         android:id="@+id/btn_camera_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:textSize="20sp"
-        android:text="Finish recording"/>
+        android:layout_margin="30dp"
+        android:textSize="16sp"
+        android:text="@string/finish_recording"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
 
-    <!-- TODO: add a button(?) -->
+        />
 
-</LinearLayout>
+
+</RelativeLayout>

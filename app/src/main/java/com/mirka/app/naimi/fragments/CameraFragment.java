@@ -40,14 +40,15 @@ public class CameraFragment extends Fragment {
     public static final String TAG = "CAMERA_FRAGMENT_TAG";
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 7;
 
+    public static final int PREPARATION_TIME = 5 * 1000;
+    public static final int RECORDING_TIME = 2 * 60 * 1000;
 
     private int frontCameraId;
     private Camera mCamera;
     private CameraPreview mPreview;
     private FrameLayout preview;
-    private TextView mTimerTextView;
-
-    private Button mStopRecordingButton;
+    private TextView mPreviewTimerTextView;
+    private TextView mRecordTimerTextView;
     private MediaRecorder mMediaRecorder;
     private boolean isRecording = false;
 
@@ -69,24 +70,27 @@ public class CameraFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_camera, container, false);
         Log.e(TAG, "onCreateView: got into camera fragment");
         preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-        mTimerTextView = (TextView)view.findViewById(R.id.tv_camera_timer_text);
-        mStopRecordingButton = (Button)view.findViewById(R.id.btn_camera_fragment);
+        mPreviewTimerTextView = (TextView)view.findViewById(R.id.tv_preview_timer);
+        mRecordTimerTextView = (TextView)view.findViewById(R.id.tv_record_timer);
+        Button mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
         launchCameraPreview();
         parentActivity = ((TestActivity)getActivity());
-        timer = new CountDownTimer(5000, 1000) {
+        timer = new CountDownTimer(PREPARATION_TIME, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                mTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
+                mPreviewTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
             }
 
             @Override
             public void onFinish() {
                 Log.e(TAG, "onFinish: finished preview");
                 recordVideo("interview");
-                timer = new CountDownTimer(5000, 1000) {
+                timer = new CountDownTimer(RECORDING_TIME, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        mTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
+                        mPreviewTimerTextView.setVisibility(View.GONE);
+                        mRecordTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
+                        mRecordTimerTextView.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -113,6 +117,7 @@ public class CameraFragment extends Fragment {
     }
     public void startQuestion(){
         Log.e(TAG, "startQuestion: started question fragment");
+
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.popBackStack();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -120,6 +125,7 @@ public class CameraFragment extends Fragment {
         //transaction.replace(id, fragment, tag);
         transaction.replace(R.id.fragment_container, new QuestionFragment(), QuestionFragment.TAG);
         transaction.commit();
+
         //replaceFragment(R.id.fragment_container, new QuestionFragment(), QuestionFragment.TAG);
     }
     private void launchCameraPreview() {
@@ -159,6 +165,7 @@ public class CameraFragment extends Fragment {
 
     private boolean prepareVideoRecorder(String videoname) {
         mMediaRecorder = new MediaRecorder();
+        mMediaRecorder.setOrientationHint(270);
         mCamera.unlock();
         mMediaRecorder.setCamera(mCamera);
 
@@ -256,8 +263,7 @@ public class CameraFragment extends Fragment {
 
         // Create a media file name
         File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VID_" + videoname + ".mp4");
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + videoname + ".mp4");
         return mediaFile;
     }
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="30dp"
+    android:layout_margin="20dp"
     tools:context="com.mirka.app.naimi.MainActivity">
 
     <TextView
@@ -33,12 +33,16 @@
         android:textSize="16sp"
         />
 
-
+    <EditText
+        android:id="@+id/et_person_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text" />
     <Button
         android:id="@+id/btn_start_interview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:padding="15dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/go_to_interview"

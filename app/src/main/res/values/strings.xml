@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Naimi</string>
     <string name="welcome_message">
-        Собеседование в компании Naimi.kz!
+        Собеседование в компанию Naimi.kz!
     </string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -11,13 +11,13 @@
 
         1) Введите ваше имя и нажмите кнопку \"Начать собеседование\"\n\n
         2) Вам будет задан ряд вопросов, на каждый из которых вам нужно записать видео-ответ\n\n
-        3) На обдумывание вопроса дается 10 сек, на запись ответа максимум 2 мин\n\n
+        3) На обдумывание вопроса дается 10 секунд, на запись ответа максимум 2 минуты\n\n
         4) Видео записывается в автоматическом режиме и только один раз\n\n
-\n
+
 
     </string>
     <string name="success">Удачного интервью!</string>
     <string name="start_recording">Перейти к записи</string>
     <string name="finish_interview">Ваше собеседование завершено!\n Ожидайте ответа в течение недели</string>
-    <string name="finish_recording">Закончить запись</string>
+    <string name="finish_recording">Завершить запись</string>
 </resources>

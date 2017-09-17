@@ -1,11 +1,6 @@
 package com.mirka.app.naimi.fragments;
 
-import android.Manifest;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -13,16 +8,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +28,12 @@ import com.mirka.app.naimi.utils.CameraPreview;
 import java.io.File;
 import java.io.IOException;
 
-import static android.app.Activity.RESULT_OK;
-
 public class CameraFragment extends Fragment {
 
     public static final String TAG = "CAMERA_FRAGMENT_TAG";
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 7;
 
-    public static final int PREPARATION_TIME = 5 * 1000;
+    public static final int PREPARATION_TIME = 4 * 1000;
     public static final int RECORDING_TIME = 2 * 60 * 1000;
 
     private int frontCameraId;
@@ -49,11 +42,14 @@ public class CameraFragment extends Fragment {
     private FrameLayout preview;
     private TextView mPreviewTimerTextView;
     private TextView mRecordTimerTextView;
+    private TextView mQuestionSubtitleTextView;
+    private RelativeLayout mRecordRelativeLayout;
     private MediaRecorder mMediaRecorder;
     private boolean isRecording = false;
+    private String question;
 
     TestActivity parentActivity;
-    CountDownTimer timer;
+    public static CountDownTimer timer;
     public CameraFragment() {
         // Required empty public constructor
     }
@@ -61,6 +57,8 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        if (bundle!=null) question = bundle.getString("question", question);
     }
 
     @Override
@@ -70,9 +68,12 @@ public class CameraFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_camera, container, false);
         Log.e(TAG, "onCreateView: got into camera fragment");
         preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+        mRecordRelativeLayout = (RelativeLayout) view.findViewById(R.id.rl_camera_record);
         mPreviewTimerTextView = (TextView)view.findViewById(R.id.tv_preview_timer);
         mRecordTimerTextView = (TextView)view.findViewById(R.id.tv_record_timer);
-        Button mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
+        mQuestionSubtitleTextView = (TextView) view.findViewById(R.id.tv_question_subtitle);
+        mQuestionSubtitleTextView.setText(question);
+        final Button mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
         launchCameraPreview();
         parentActivity = ((TestActivity)getActivity());
         timer = new CountDownTimer(PREPARATION_TIME, 1000) {
@@ -85,22 +86,21 @@ public class CameraFragment extends Fragment {
             public void onFinish() {
                 Log.e(TAG, "onFinish: finished preview");
                 recordVideo("interview");
+                mRecordRelativeLayout.setVisibility(View.VISIBLE);
                 timer = new CountDownTimer(RECORDING_TIME, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         mPreviewTimerTextView.setVisibility(View.GONE);
-                        mRecordTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
-                        mRecordTimerTextView.setVisibility(View.VISIBLE);
+                        mRecordTimerTextView.setText(String.format("%02d:%02d", (millisUntilFinished/1000) / 60, (millisUntilFinished/1000) % 60));
+                        mQuestionSubtitleTextView.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onFinish() {
                         Log.e(TAG, "onFinish: finished recording");
                         recordVideo("interview");
-                        //parentActivity.startQuestion();
                     }
                 }.start();
-//                startQuestion();
             }
         }.start();
 
@@ -118,21 +118,20 @@ public class CameraFragment extends Fragment {
     public void startQuestion(){
         Log.e(TAG, "startQuestion: started question fragment");
 
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.popBackStack();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-//        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
-        //transaction.replace(id, fragment, tag);
+      //  transaction.addToBackStack(null);
         transaction.replace(R.id.fragment_container, new QuestionFragment(), QuestionFragment.TAG);
         transaction.commit();
 
-        //replaceFragment(R.id.fragment_container, new QuestionFragment(), QuestionFragment.TAG);
     }
     private void launchCameraPreview() {
         mCamera = getCameraInstance(getActivity(), frontCameraId);
         mPreview = new CameraPreview(getActivity(), mCamera);
         preview.addView(mPreview);
     }
+
+
 
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(Context context, int id){
@@ -166,7 +165,7 @@ public class CameraFragment extends Fragment {
     private boolean prepareVideoRecorder(String videoname) {
         mMediaRecorder = new MediaRecorder();
         mMediaRecorder.setOrientationHint(270);
-        mCamera.unlock();
+        if (mCamera != null)mCamera.unlock();
         mMediaRecorder.setCamera(mCamera);
 
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);

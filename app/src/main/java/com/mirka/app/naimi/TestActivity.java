@@ -1,21 +1,16 @@
 package com.mirka.app.naimi;
 
 import android.Manifest;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.net.Uri;
-import android.nfc.Tag;
-import android.os.CountDownTimer;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.mirka.app.naimi.fragments.CameraFragment;
@@ -24,6 +19,7 @@ import com.mirka.app.naimi.fragments.QuestionFragment;
 import java.util.ArrayList;
 
 import static com.mirka.app.naimi.fragments.CameraFragment.MY_PERMISSIONS_REQUEST_CAMERA;
+import static com.mirka.app.naimi.fragments.CameraFragment.timer;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -110,21 +106,29 @@ public class TestActivity extends AppCompatActivity {
     }
 
     public void launchFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-//        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
         transaction.add(R.id.fragment_container, questionFragment, QuestionFragment.TAG);
         transaction.commit();
     }
 
-//    public void replaceFragment(int id, Fragment fragment, String tag) {
-//        Toast.makeText(this, "HEY THERE", Toast.LENGTH_LONG).show();
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction transaction = fragmentManager.beginTransaction();
-////        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
-//        transaction.replace(id, fragment, tag);
-//        transaction.commit();
-//    }
+
+    @Override
+    public void onBackPressed() {
+        if (timer!=null){
+            Log.e(TAG, "onBackPressed: timer is alive");
+            timer.cancel();
+            timer=null;
+        }
+//        final Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+//        if (fragment!=null){
+//            getFragmentManager().beginTransaction().remove(fragment).commit();
+//        }
+
+        super.onBackPressed();
+
+
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

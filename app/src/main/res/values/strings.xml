@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Naimi</string>
+    <string name="welcome_message">
+        Собеседование в компании Naimi.kz!
+    </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="go_to_interview">Начать блиц-интервью</string>
+    <string name="instructions" >
+
+        1) Введите ваше имя и нажмите кнопку \"Начать собеседование\"\n\n
+        2) Вам будет задан ряд вопросов, на каждый из которых вам нужно записать видео-ответ\n\n
+        3) На обдумывание вопроса дается 10 сек, на запись ответа максимум 2 мин\n\n
+        4) Видео записывается в автоматическом режиме и только один раз\n\n
+\n
+
+    </string>
+    <string name="success">Удачного интервью!</string>
+    <string name="start_recording">Перейти к записи</string>
+    <string name="finish_interview">Ваше собеседование завершено!\n Ожидайте ответа в течение недели</string>
+    <string name="finish_recording">Закончить запись</string>
 </resources>

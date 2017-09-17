@@ -23,11 +23,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mirka.app.naimi.R;
 import com.mirka.app.naimi.TestActivity;
+import com.mirka.app.naimi.data.AppData;
 import com.mirka.app.naimi.utils.CameraPreview;
 import com.mirka.app.naimi.utils.VideoEditingUtils;
 
@@ -55,10 +57,14 @@ public class CameraFragment extends Fragment {
     private TextView mPreviewTimerTextView;
     private TextView mRecordTimerTextView;
     private MediaRecorder mMediaRecorder;
+    private TextView mQuestionSubtitleTextView;
+    private RelativeLayout mRecordRelativeLayout;
     private boolean isRecording = false;
     private Button mStopRecordingButton;
     TestActivity parentActivity;
     CountDownTimer timer;
+    private String question;
+
     public CameraFragment() {
         // Required empty public constructor
     }
@@ -66,6 +72,8 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        if (bundle!=null) question = bundle.getString("question", question);
     }
 
     @Override
@@ -76,9 +84,12 @@ public class CameraFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_camera, container, false);
         Log.e(TAG, "onCreateView: got into camera fragment");
         preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+        mRecordRelativeLayout = (RelativeLayout) view.findViewById(R.id.rl_camera_record);
         mPreviewTimerTextView = (TextView)view.findViewById(R.id.tv_preview_timer);
         mRecordTimerTextView = (TextView)view.findViewById(R.id.tv_record_timer);
         mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
+        mQuestionSubtitleTextView = (TextView) view.findViewById(R.id.tv_question_subtitle);
+        mQuestionSubtitleTextView.setText(AppData.getQuestions().get(TestActivity.getQuestionNum()-1));
         launchCameraPreview();
         mStopRecordingButton.setEnabled(false);
         parentActivity = ((TestActivity)getActivity());
@@ -93,12 +104,13 @@ public class CameraFragment extends Fragment {
             public void onFinish() {
                 Log.e(TAG, "onFinish: finished preview");
                 recordVideo(base_filename+TestActivity.getQuestionNum());
+                mRecordRelativeLayout.setVisibility(View.VISIBLE);
                 timer = new CountDownTimer(RECORDING_TIME, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         mPreviewTimerTextView.setVisibility(View.GONE);
-                        mRecordTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
-                        mRecordTimerTextView.setVisibility(View.VISIBLE);
+                        mRecordTimerTextView.setText(String.format("%02d:%02d", (millisUntilFinished/1000) / 60, (millisUntilFinished/1000) % 60));                        mRecordTimerTextView.setVisibility(View.VISIBLE);
+                        mQuestionSubtitleTextView.setVisibility(View.VISIBLE);
                         if (millisUntilFinished/1000 == RECORDING_TIME/1000-5) {
                             mStopRecordingButton.setEnabled(true);
                         }
@@ -108,7 +120,7 @@ public class CameraFragment extends Fragment {
                     public void onFinish() {
                         Log.e(TAG, "onFinish: finished recording");
                         recordVideo("");
-                        Toast.makeText(parentActivity, TestActivity.getQuestionNum(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(parentActivity, TestActivity.getQuestionNum(), Toast.LENGTH_SHORT).show();
                         //parentActivity.startQuestion();
                     }
                 }.start();
@@ -226,7 +238,7 @@ public class CameraFragment extends Fragment {
             // stop recording and release camera
             Log.e(TAG, "recordVideo: it is recording need to stop");
             mMediaRecorder.stop();  // stop the recording
-            Toast.makeText(getActivity(), "video stopped", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "video stopped", Toast.LENGTH_SHORT).show();
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
             isRecording = false;
@@ -239,13 +251,13 @@ public class CameraFragment extends Fragment {
                 Log.e(TAG, "recordVideo: not recording, therefore start recording");
                 mMediaRecorder.start();
                 isRecording = true;
-                Toast.makeText(getActivity(), "Video started", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Video started", Toast.LENGTH_SHORT).show();
             } else {
                 // prepare didn't work, release the camera
                 Log.e(TAG, "recordVideo: prepare did not work");
                 releaseMediaRecorder();
                 // inform user
-                Toast.makeText(getActivity(), "Camera does not work", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Camera does not work", Toast.LENGTH_SHORT).show();
             }
         }
     }

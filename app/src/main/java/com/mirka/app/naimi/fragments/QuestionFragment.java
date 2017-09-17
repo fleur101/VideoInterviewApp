@@ -36,6 +36,8 @@ public class QuestionFragment extends Fragment {
     private TextView mTimerTextView;
     private TextView mFinishInterviewTextView;
     private RelativeLayout mQuestionRelativeLayout;
+    private TextView mNameTextView;
+    private String questionName;
     public static final int QUESTION_TIME = 10 * 1000;
     TestActivity parentActivity;
     CountDownTimer timer;
@@ -54,6 +56,7 @@ public class QuestionFragment extends Fragment {
         // inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_question, container, false);
         Log.e(TAG, "onCreateView: got into question fragment");
+        mNameTextView = (TextView) view.findViewById(R.id.tv_my_name);
 
         mQuestionRelativeLayout = (RelativeLayout) view.findViewById(R.id.rl_question);
         mFinishInterviewTextView = (TextView) view.findViewById(R.id.tv_end_interview);
@@ -65,7 +68,7 @@ public class QuestionFragment extends Fragment {
         if (TestActivity.getQuestionNum() == getNumberOfQuestions()) {
             mQuestionRelativeLayout.setVisibility(View.GONE);
             mFinishInterviewTextView.setVisibility(View.VISIBLE);
-
+            mNameTextView.setVisibility(View.VISIBLE);
             String[] names = new String[getNumberOfQuestions()];
             for (int i = 0; i<getNumberOfQuestions(); i++){
                 names[i]=base_filename+(i+1)+".mp4";
@@ -113,11 +116,15 @@ public class QuestionFragment extends Fragment {
     }
     public void startVideo(){
         Log.e(TAG, "startVideo: started video");
+        Bundle bundle = new Bundle();
+         bundle.putString("question", questionName);
+        Fragment fragment = new CameraFragment();
+        fragment.setArguments(bundle);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 //        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
        // transaction.replace(id, fragment, tag);
-        transaction.replace(R.id.fragment_container, new CameraFragment(), CameraFragment.TAG);
+        transaction.replace(R.id.fragment_container, fragment, CameraFragment.TAG);
         transaction.commit();
        // replaceFragment(R.id.fragment_container, new CameraFragment(), CameraFragment.TAG);
     }

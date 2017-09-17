@@ -21,10 +21,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.coremedia.iso.boxes.Container;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+import com.googlecode.mp4parser.DataSource;
 import com.mirka.app.naimi.utils.CameraPreview;
 
 
@@ -33,15 +40,24 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.coremedia.iso.IsoFile;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.tracks.TextTrackImpl;
+import com.googlecode.mp4parser.srt.SrtParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
@@ -62,6 +78,10 @@ public class VideoTestActivity extends AppCompatActivity {
     private boolean isRecording = false;
     private Button mButton;
 
+    private String concat_video_path;
+    private String subtitle_path;
+    private Map<String, String> envs;
+
     private int n = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +90,7 @@ public class VideoTestActivity extends AppCompatActivity {
 
         mVideoView = (VideoView) findViewById(R.id.vv_show_video);
         mButton = (Button) findViewById(R.id.button);
+        subtitle_path=buildSRTFile("filename0.srt", "1\n00:00:00,000 --> 00:00:10,000\nSome Text\n");
     }
 
     @Override
@@ -188,8 +209,6 @@ public class VideoTestActivity extends AppCompatActivity {
         n++;
     }
 
-
-
     private void recordVideo(String filename){
         if (isRecording) {
             // stop recording and release camera
@@ -304,9 +323,88 @@ public class VideoTestActivity extends AppCompatActivity {
 
     public void concatenate(View view){
         try {
-            appendVideo( new String[]{"filename0.mp4", "filename2.mp4"}  );
+            concat_video_path = appendVideo( new String[]{"filename0.mp4", "filename2.mp4"}  );
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void addSubsToVideo(String filename, String subtitle) {
+        try {
+            Movie countVideo = MovieCreator.build(String.valueOf(new FileInputStream(path+filename+".mp4").getChannel()));
+//            Movie countVideo = MovieCreator.build((DataSource) new FileInputStream(path+filename+".mp4").getChannel());
+
+            TextTrackImpl subs = new TextTrackImpl();
+            subs.getTrackMetaData().setLanguage("eng");
+
+            subs.getSubs().add(new TextTrackImpl.Line(0, 5000, subtitle));
+
+            countVideo.addTrack(subs);
+
+            IsoFile out = (IsoFile) new DefaultMp4Builder().build(countVideo);
+            FileOutputStream fos = new FileOutputStream(new File(path+"output.mp4"));
+            out.getBox(fos.getChannel());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void subtitles(View view) {
+//        Toast.makeText(this, "Hello, subs", Toast.LENGTH_SHORT).show();
+//        addSubsToVideo("filename0", "Mirka is the best");
+//        Toast.makeText(this, "Added subs", Toast.LENGTH_SHORT).show();
+//        envs = new HashMap<>();
+//        envs.put("-i", path+"filename0.mp4");
+//        envs.put("-vf", "\"drawtext=text='Test Text'\"");
+//        envs.put(""
+        FFmpeg ffmpeg = FFmpeg.getInstance(this);
+        try {
+            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+
+                @Override
+                public void onStart() {}
+
+                @Override
+                public void onFailure() {}
+
+                @Override
+                public void onSuccess() {}
+
+                @Override
+                public void onFinish() {}
+            });
+        } catch (FFmpegNotSupportedException e) {
+            // Handle if FFmpeg is not supported by device
+        }
+
+        try {
+
+            // to execute "ffmpeg -version" command you just need to pass "-version"
+            ffmpeg.execute(("-i "+path+"filename0.mp4 -i "+subtitle_path+" -c copy -c:s mov_text "+path+"outfile.mp4").split(" "), new ExecuteBinaryResponseHandler() {
+
+                @Override
+                public void onStart() {}
+
+                @Override
+                public void onProgress(String message) {}
+
+                @Override
+                public void onFailure(String message) {
+                    ((TextView) findViewById(R.id.tv_output)).setText(message);
+                }
+
+                @Override
+                public void onSuccess(String message) {
+                    Toast.makeText(VideoTestActivity.this, "success", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFinish() {}
+            });
+        } catch (FFmpegCommandAlreadyRunningException e) {
+            // Handle if FFmpeg is already running
         }
     }
 
@@ -353,6 +451,19 @@ public class VideoTestActivity extends AppCompatActivity {
         fc.close();
         Log.v(TAG, "after combine videoCombinepath = " + videoCombinePath);
         return videoCombinePath;
+    }
+
+    public String buildSRTFile(String filename, String subtitle){
+        FileOutputStream outputStream;
+        try {
+            outputStream = new FileOutputStream (new File(path+filename), false);
+            outputStream.write(subtitle.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return path+filename;
     }
 
 }

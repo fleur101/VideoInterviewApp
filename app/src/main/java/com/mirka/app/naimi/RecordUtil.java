@@ -157,12 +157,12 @@ public class RecordUtil {
 		return filePath;
 	}
 
-	public static String createFinalPath(Context context)
+	public static String createFinalPath(Context context, String name)
 	{
 		long dateTaken = System.currentTimeMillis();
 		String title = Constants.FILE_START_NAME + dateTaken;
 		String filename = title + Constants.VIDEO_EXTENSION;
-		String filePath = genrateFilePath(context,String.valueOf(dateTaken), true, null);
+		String filePath = genrateFilePath(context,name, true, null);
 		ContentValues values = new ContentValues(7);
 		values.put(Video.Media.TITLE, title);
 		values.put(Video.Media.DISPLAY_NAME, filename);
@@ -192,8 +192,10 @@ public class RecordUtil {
 
 	private static String genrateFilePath(Context context,String uniqueId, boolean isFinalPath, File tempFolderPath)
 	{
-		String fileName = Constants.FILE_START_NAME + uniqueId + Constants.VIDEO_EXTENSION;
-		String dirPath = Environment.getExternalStorageDirectory()+"/" + context.getPackageName()+"/video/ugc";
+		long dateTaken = System.currentTimeMillis();
+		String fileName = Constants.FILE_START_NAME + uniqueId + dateTaken + Constants.VIDEO_EXTENSION;
+		String dirPath = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_PICTURES)+ File.separator +"MyCameraApp" + File.separator;
 		if (isFinalPath) {
 			File file = new File(dirPath);
 			if(!file.exists() || !file.isDirectory()) {

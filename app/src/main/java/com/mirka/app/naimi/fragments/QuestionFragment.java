@@ -15,11 +15,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mirka.app.naimi.R;
 import com.mirka.app.naimi.TestActivity;
+import com.mirka.app.naimi.data.AppData;
+import com.mirka.app.naimi.utils.VideoEditingUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.mirka.app.naimi.data.AppData.base_filename;
+import static com.mirka.app.naimi.data.AppData.base_filename_subs;
+import static com.mirka.app.naimi.data.AppData.getNumberOfQuestions;
 
 public class QuestionFragment extends Fragment {
 
@@ -52,13 +61,31 @@ public class QuestionFragment extends Fragment {
         mTimerTextView = (TextView) view.findViewById(R.id.tv_timer_text);
         Button mSkipQuestionButton = (Button) view.findViewById(R.id.btn_question_fragment);
         parentActivity = ((TestActivity)getActivity());
-        if (TestActivity.getQuestionNum() == 5) {
+        Context context = getActivity().getApplicationContext();
+        if (TestActivity.getQuestionNum() == getNumberOfQuestions()) {
             mQuestionRelativeLayout.setVisibility(View.GONE);
             mFinishInterviewTextView.setVisibility(View.VISIBLE);
+
+            String[] names = new String[getNumberOfQuestions()];
+            for (int i = 0; i<getNumberOfQuestions(); i++){
+                names[i]=base_filename+(i+1)+".mp4";
+            }
+
+            List<Long> timings = VideoEditingUtils.getSubtitlesTiming(context, names);
+            VideoEditingUtils.buildSRTFile(AppData.getQuestions(), timings);
+            try {
+                String withoutSubsPath = VideoEditingUtils.appendVideo(names, getActivity().getApplicationContext());
+                Toast.makeText(parentActivity, withoutSubsPath, Toast.LENGTH_SHORT).show();
+                VideoEditingUtils.embedSubtitlesToVideo(getActivity().getApplicationContext(), withoutSubsPath, base_filename_subs);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(parentActivity, "Error appending" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
         } else {
             mQuestionTextView.setText(TestActivity.mQuestionList.get(TestActivity.getQuestionNum()));
             TestActivity.increaseQuestionNum();
-            timer = new CountDownTimer(10000, 1000) {
+            timer = new CountDownTimer(QUESTION_TIME, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     mTimerTextView.setText(String.valueOf(millisUntilFinished / 1000));
@@ -87,7 +114,6 @@ public class QuestionFragment extends Fragment {
     public void startVideo(){
         Log.e(TAG, "startVideo: started video");
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.popBackStack();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 //        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
        // transaction.replace(id, fragment, tag);

@@ -29,18 +29,23 @@ import android.widget.Toast;
 import com.mirka.app.naimi.R;
 import com.mirka.app.naimi.TestActivity;
 import com.mirka.app.naimi.utils.CameraPreview;
+import com.mirka.app.naimi.utils.VideoEditingUtils;
+
+import junit.framework.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
+import static com.mirka.app.naimi.data.AppData.base_filename;
+import static com.mirka.app.naimi.data.AppData.getQuestions;
 
 public class CameraFragment extends Fragment {
 
     public static final String TAG = "CAMERA_FRAGMENT_TAG";
     public static final int MY_PERMISSIONS_REQUEST_CAMERA = 7;
 
-    public static final int PREPARATION_TIME = 5 * 1000;
+    public static final int PREPARATION_TIME = 2 * 1000;
     public static final int RECORDING_TIME = 2 * 60 * 1000;
 
     private int frontCameraId;
@@ -51,7 +56,7 @@ public class CameraFragment extends Fragment {
     private TextView mRecordTimerTextView;
     private MediaRecorder mMediaRecorder;
     private boolean isRecording = false;
-
+    private Button mStopRecordingButton;
     TestActivity parentActivity;
     CountDownTimer timer;
     public CameraFragment() {
@@ -67,36 +72,43 @@ public class CameraFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         frontCameraId = TestActivity.getFrontCameraId(getActivity());
         // inflate the layout for this fragment
+
         final View view = inflater.inflate(R.layout.fragment_camera, container, false);
         Log.e(TAG, "onCreateView: got into camera fragment");
         preview = (FrameLayout) view.findViewById(R.id.camera_preview);
         mPreviewTimerTextView = (TextView)view.findViewById(R.id.tv_preview_timer);
         mRecordTimerTextView = (TextView)view.findViewById(R.id.tv_record_timer);
-        Button mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
+        mStopRecordingButton = (Button) view.findViewById(R.id.btn_camera_fragment);
         launchCameraPreview();
+        mStopRecordingButton.setEnabled(false);
         parentActivity = ((TestActivity)getActivity());
         timer = new CountDownTimer(PREPARATION_TIME, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 mPreviewTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
+
             }
 
             @Override
             public void onFinish() {
                 Log.e(TAG, "onFinish: finished preview");
-                recordVideo("interview");
+                recordVideo(base_filename+TestActivity.getQuestionNum());
                 timer = new CountDownTimer(RECORDING_TIME, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         mPreviewTimerTextView.setVisibility(View.GONE);
                         mRecordTimerTextView.setText(String.valueOf(millisUntilFinished/1000));
                         mRecordTimerTextView.setVisibility(View.VISIBLE);
+                        if (millisUntilFinished/1000 == RECORDING_TIME/1000-5) {
+                            mStopRecordingButton.setEnabled(true);
+                        }
                     }
 
                     @Override
                     public void onFinish() {
                         Log.e(TAG, "onFinish: finished recording");
-                        recordVideo("interview");
+                        recordVideo("");
+                        Toast.makeText(parentActivity, TestActivity.getQuestionNum(), Toast.LENGTH_SHORT).show();
                         //parentActivity.startQuestion();
                     }
                 }.start();
@@ -110,6 +122,8 @@ public class CameraFragment extends Fragment {
             public void onClick(View v)
             {
                 timer.cancel();
+
+                //recordVideo("");
                 startQuestion();
             }
         });
@@ -117,9 +131,7 @@ public class CameraFragment extends Fragment {
     }
     public void startQuestion(){
         Log.e(TAG, "startQuestion: started question fragment");
-
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.popBackStack();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 //        transaction.add(R.id.frame_camera, cameraFragment, CameraFragment.TAG);
         //transaction.replace(id, fragment, tag);

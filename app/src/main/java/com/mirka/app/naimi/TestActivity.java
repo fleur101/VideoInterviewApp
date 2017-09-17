@@ -18,14 +18,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.mirka.app.naimi.data.AppData;
 import com.mirka.app.naimi.fragments.CameraFragment;
 import com.mirka.app.naimi.fragments.QuestionFragment;
+import com.mirka.app.naimi.utils.VideoEditingUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.mirka.app.naimi.fragments.CameraFragment.MY_PERMISSIONS_REQUEST_CAMERA;
 
 public class TestActivity extends AppCompatActivity {
+
+
 
     private static final String TAG = "TEST_ACTIVITY_TAG";
     static final int REQUEST_VIDEO_CAPTURE = 1;
@@ -34,7 +39,9 @@ public class TestActivity extends AppCompatActivity {
 
     public CameraFragment cameraFragment;
     public QuestionFragment questionFragment;
-    public static ArrayList<String> mQuestionList;
+    public static List<String> mQuestionList;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +50,8 @@ public class TestActivity extends AppCompatActivity {
 
         cameraFragment = new CameraFragment();
         questionFragment = new QuestionFragment();
-
         ensurePermission();
-        fillQuestions();
+        mQuestionList = AppData.getQuestions();
     }
 
     public static void increaseQuestionNum(){
@@ -99,15 +105,7 @@ public class TestActivity extends AppCompatActivity {
         }
     }
 
-    private void fillQuestions() {
-        // filling questions list
-        mQuestionList = new ArrayList<>();
-        mQuestionList.add("Расскажите вкратце о себе");
-        mQuestionList.add("Расскажите о своих профессиональных навыках");
-        mQuestionList.add("Каков ваш опыт работы в данной сфере?");
-        mQuestionList.add("Каковые ваши недостатки и достоинства?");
-        mQuestionList.add("Почему Вы выбрали эту площадку?");
-    }
+
 
     public void launchFragment() {
         FragmentManager fragmentManager = getFragmentManager();
@@ -137,10 +135,5 @@ public class TestActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
-
-
 
 }

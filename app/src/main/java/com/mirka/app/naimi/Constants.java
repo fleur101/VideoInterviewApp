@@ -5,7 +5,7 @@ import android.os.Environment;
 public class Constants {
 	
 	public final static String METADATA_REQUEST_BUNDLE_TAG = "requestMetaData";
-	public final static String FILE_START_NAME = "IfengUGC_";
+	public final static String FILE_START_NAME = "final-video";
 	public final static String VIDEO_EXTENSION = ".mp4";
 	public final static String IMAGE_EXTENSION = ".jpg";
 	public final static String DCIM_FOLDER = "/DCIM";

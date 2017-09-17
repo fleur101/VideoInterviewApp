@@ -44,6 +44,7 @@ import com.coremedia.iso.IsoFile;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.tracks.TextTrackImpl;
 import com.googlecode.mp4parser.srt.SrtParser;
+import com.mirka.app.naimi.utils.VideoEditingUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -358,54 +359,54 @@ public class VideoTestActivity extends AppCompatActivity {
 //        envs.put("-i", path+"filename0.mp4");
 //        envs.put("-vf", "\"drawtext=text='Test Text'\"");
 //        envs.put(""
-        FFmpeg ffmpeg = FFmpeg.getInstance(this);
-        try {
-            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
-
-                @Override
-                public void onStart() {}
-
-                @Override
-                public void onFailure() {}
-
-                @Override
-                public void onSuccess() {}
-
-                @Override
-                public void onFinish() {}
-            });
-        } catch (FFmpegNotSupportedException e) {
-            // Handle if FFmpeg is not supported by device
-        }
-
-        try {
-
-            // to execute "ffmpeg -version" command you just need to pass "-version"
-            ffmpeg.execute(("-i "+path+"filename0.mp4 -i "+subtitle_path+" -c copy -c:s mov_text "+path+"outfile.mp4").split(" "), new ExecuteBinaryResponseHandler() {
-
-                @Override
-                public void onStart() {}
-
-                @Override
-                public void onProgress(String message) {}
-
-                @Override
-                public void onFailure(String message) {
-                    ((TextView) findViewById(R.id.tv_output)).setText(message);
-                }
-
-                @Override
-                public void onSuccess(String message) {
-                    Toast.makeText(VideoTestActivity.this, "success", Toast.LENGTH_SHORT).show();
-//                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFinish() {}
-            });
-        } catch (FFmpegCommandAlreadyRunningException e) {
-            // Handle if FFmpeg is already running
-        }
+        //VideoEditingUtils.embedSubtitlesToVideo(this, 1);
+//        FFmpeg ffmpeg = FFmpeg.getInstance(this);
+//        try {
+//            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+//
+//                @Override
+//                public void onStart() {}
+//
+//                @Override
+//                public void onFailure() {}
+//
+//                @Override
+//                public void onSuccess() {}
+//
+//                @Override
+//                public void onFinish() {}
+//            });
+//        } catch (FFmpegNotSupportedException e) {
+//            // Handle if FFmpeg is not supported by device
+//        }
+//
+//        try {
+//
+//            // to execute "ffmpeg -version" command you just need to pass "-version"
+//            ffmpeg.execute(("-i "+path+"filename0.mp4 -i "+subtitle_path+" -c copy -c:s mov_text "+path+"outfile.mp4").split(" "), new ExecuteBinaryResponseHandler() {
+//
+//                @Override
+//                public void onStart() {}
+//
+//                @Override
+//                public void onProgress(String message) {}
+//
+//                @Override
+//                public void onFailure(String message) {
+//                }
+//
+//                @Override
+//                public void onSuccess(String message) {
+//                    Toast.makeText(VideoTestActivity.this, "success", Toast.LENGTH_SHORT).show();
+////                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onFinish() {}
+//            });
+//        } catch (FFmpegCommandAlreadyRunningException e) {
+//            // Handle if FFmpeg is already running
+//        }
     }
 
     /**
@@ -444,7 +445,7 @@ public class VideoTestActivity extends AppCompatActivity {
         if (videoTracks.size() > 0) {
             result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
         }
-        String videoCombinePath = RecordUtil.createFinalPath(this);
+        String videoCombinePath = "";
         Container out = new DefaultMp4Builder().build(result);
         FileChannel fc = new RandomAccessFile(videoCombinePath, "rw").getChannel();
         out.writeContainer(fc);

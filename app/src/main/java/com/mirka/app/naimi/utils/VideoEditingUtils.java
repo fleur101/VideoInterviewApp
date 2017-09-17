@@ -20,8 +20,10 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.mirka.app.naimi.MainActivity;
 import com.mirka.app.naimi.R;
 import com.mirka.app.naimi.RecordUtil;
+import com.mirka.app.naimi.TestActivity;
 import com.mirka.app.naimi.VideoTestActivity;
 
 import org.apache.commons.io.FileUtils;
@@ -171,7 +173,7 @@ public class VideoEditingUtils {
         if (videoTracks.size() > 0) {
             result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
         }
-        String videoCombinePath = RecordUtil.createFinalPath(context, "mirka");
+        String videoCombinePath = RecordUtil.createFinalPath(context, MainActivity.getName());
         Container out = new DefaultMp4Builder().build(result);
         FileChannel fc = new RandomAccessFile(videoCombinePath, "rw").getChannel();
         out.writeContainer(fc);
